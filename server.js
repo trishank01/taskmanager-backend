@@ -5,6 +5,8 @@ const path = require("path");
 const { connect } = require("http2");
 const connectDB = require("./config/db");
 
+const authRoutes = require("./routes/authRoutes")
+
 
 const app = express()
 
@@ -31,12 +33,30 @@ app.use(express.json())
 
 
 //Routes
-// app.use("/api/auth" , authRoutes);
+ app.use("/api/auth" , authRoutes);
 // app.use("/api/users" , userRoutes);
 // app.use("/api/tasks" , taskRoutes);
 // app.use("/api/reports" , reportRoutes);
 
+// app.get('/', (req, res) => {
+//     res.send('Go to <a href="/check">/check</a> to see the HTML response.');
+//   });
 
+//   // Route: GET /check
+// app.get('/check', (req, res) => {
+//     res.send(`
+//       <!DOCTYPE html>
+//       <html>
+//         <head>
+//           <title>Check Route</title>
+//         </head>
+//         <body style="font-family: Arial; text-align: center; padding: 50px;">
+//           <h1>🚀 Node.js with Express is Working!</h1>
+//           <p>This is the <strong>/check</strong> route response.</p>
+//         </body>
+//       </html>
+//     `);
+//   });
 
 
 // Start Server
