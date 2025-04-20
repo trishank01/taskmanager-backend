@@ -9,7 +9,7 @@ const todoSchema = new mongoose.Schema({
 const taskSchema = new mongoose.Schema(
     {
         title: {type:String, required:true},
-        description: {type:string},
+        description: {type:String},
         priority: {type:String, enum:["Low", "Medium", "High"] , default: "Medium"},
         Status: {type:String, enum:["Pending", "In Progress" , "Completed"] , default:"Pending"},
         dueDate: {type:Date, required:true},
