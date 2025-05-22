@@ -17,12 +17,12 @@ const getTasks = async (req, res) => {
     if (req.user.role === "admin") {
       tasks = await Task.find(filter).populate(
         "assignedTo",
-        "name email ProfileImageUrl"
+        "name email profileImageUrl"
       );
     } else {
       tasks = await Task.find({ ...filter, assignedTo: req.user._id }).populate(
         "assignedTo",
-        "name email ProfileImageUrl"
+        "name email profileImageUrl"
       );
     }
 
@@ -37,7 +37,7 @@ const getTasks = async (req, res) => {
       })
     );
 
-    // Status summary
+    // status summary
     const allTasks = await Task.countDocuments(
       req.user.role === "admin" ? {} : { assignedTo: req.user._id }
     );
@@ -81,7 +81,7 @@ const getTaskById = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id).populate(
       "assignedTo",
-      "name email ProfileImageUrl"
+      "name email profileImageUrl"
     );
     if (!task) return res.status(404).json({ message: "Task not found" });
 
@@ -174,7 +174,7 @@ const deleteTask = async (req, res) => {
 };
 
 // @desc    Update task status
-// @route   PUT /api/tasks/:id/Status
+// @route   PUT /api/tasks/:id/status
 // @access  Private
 
 const updateTaskStatus = async (req, res) => {
@@ -190,9 +190,9 @@ const updateTaskStatus = async (req, res) => {
       return res.status(403).json({ message: "Not authorized" });
     }
 
-    task.Status = req.body.status || task.Status;
+    task.status = req.body.status || task.status;
 
-    if (task.Status === "Completed") {
+    if (task.status === "Completed") {
       task.todoChecklist.forEach((item) => (item.completed = true));
       task.progress = 100;
     }
@@ -234,11 +234,11 @@ const updateTaskChecklist = async (req, res) => {
 
     // Auto-mark task as completed if all items are checked
     if (task.progress === 100) {
-      task.Status = "Completed";
+      task.status = "Completed";
     } else if (task.progress > 0) {
-      task.Status = "In Progress";
+      task.status = "In Progress";
     } else {
-      task.Status = "Pending";
+      task.status = "Pending";
     }
 
     await task.save();
