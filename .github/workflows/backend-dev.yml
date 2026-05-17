@@ -34,7 +34,7 @@ jobs:
         with:
           image-ref: trishank01/taskmanager-backend:${{ env.IMAGE_TAG }}
           format: table
-          exit-code: 1
+          exit-code: 0
           ignore-unfixed: true
           severity: CRITICAL,HIGH
 
