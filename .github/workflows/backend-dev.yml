@@ -5,6 +5,12 @@ on:
     branches:
       - develop
 
+permissions:
+  contents: write
+
+env:
+  IMAGE_TAG: ${{ github.sha }}
+
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -21,17 +27,34 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t trishank01/taskmanager-backend:dev .
-      
+          docker build --no-cache -t trishank01/taskmanager-backend:${IMAGE_TAG} .
+
       - name: Run Trivy Scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: trishank01/taskmanager-backend:dev
+          image-ref: trishank01/taskmanager-backend:${{ env.IMAGE_TAG }}
           format: table
           exit-code: 1
           ignore-unfixed: true
-          severity: CRITICAL
+          severity: CRITICAL,HIGH
 
       - name: Push Docker Image
         run: |
-          docker push trishank01/taskmanager-backend:dev
+          docker push trishank01/taskmanager-backend:${IMAGE_TAG}
+
+      - name: Update K8s Manifest Repo
+        run: |
+          git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/trishank01/task-manager-k8s.git
+
+          cd task-manager-k8s
+
+          sed -i "s|image: trishank01/taskmanager-backend:.*|image: trishank01/taskmanager-backend:${IMAGE_TAG}|g" dev/backend/deployment.yaml
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add .
+
+          git commit -m "update backend dev image to ${IMAGE_TAG}"
+
+          git push
